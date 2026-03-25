@@ -1,0 +1,49 @@
+{
+  "name": "Lead Sniper Workflow",
+  "nodes": [
+    {
+      "name": "Get Stargazers",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "https://api.github.com/repos/n8n-io/n8n/stargazers",
+        "method": "GET",
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GITHUB_TOKEN"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get User Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "https://api.github.com/users/{{$json[\"login\"]}}",
+        "method": "GET"
+      }
+    },
+    {
+      "name": "Filter High Value",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json[\"followers\"]}}",
+              "operation": "larger",
+              "value2": 100
+            },
+            {
+              "value1": "={{$json[\"public_repos\"]}}",
+              "operation": "larger",
+              "value2": 50
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
